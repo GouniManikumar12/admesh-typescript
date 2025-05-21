@@ -11,7 +11,6 @@ export class Recommend extends APIResource {
    * @example
    * ```ts
    * const response = await client.recommend.getRecommendations({
-   *   agent_id: 'cursor',
    *   query: 'Best CRM for remote teams',
    * });
    * ```
@@ -115,8 +114,6 @@ export namespace RecommendGetRecommendationsResponse {
 }
 
 export interface RecommendGetRecommendationsParams {
-  agent_id: string;
-
   query: string;
 
   followup_suggestions?: string | null;

@@ -1,4 +1,4 @@
 configured_endpoints: 1
-openapi_spec_url: https://storage.googleapis.com/stainless-sdk-openapi-specs/admesh%2Fadmesh-32659c4a2df1e7f77f3ae49e35e0209a716032f468206e3a500f3c6352fa0a2e.yml
-openapi_spec_hash: b6ad20d203772896f8291a43a66a5ec9
+openapi_spec_url: https://storage.googleapis.com/stainless-sdk-openapi-specs/admesh%2Fadmesh-0ac468605afec34f4b8d33765b016d9d108651bc85cda087c9434a851cb3c1f9.yml
+openapi_spec_hash: e3d0cd54578efc00a46300e1949c6a20
 config_hash: 80ce949881c7734ecd9bb8f2beccc517

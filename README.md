@@ -27,10 +27,7 @@ const client = new Admesh({
 });
 
 async function main() {
-  const response = await client.recommend.getRecommendations({
-    agent_id: 'cursor',
-    query: 'Best CRM for remote teams',
-  });
+  const response = await client.recommend.getRecommendations({ query: 'Best CRM for remote teams' });
 
   console.log(response.recommendation_id);
 }
@@ -51,10 +48,7 @@ const client = new Admesh({
 });
 
 async function main() {
-  const params: Admesh.RecommendGetRecommendationsParams = {
-    agent_id: 'cursor',
-    query: 'Best CRM for remote teams',
-  };
+  const params: Admesh.RecommendGetRecommendationsParams = { query: 'Best CRM for remote teams' };
   const response: Admesh.RecommendGetRecommendationsResponse = await client.recommend.getRecommendations(
     params,
   );
@@ -75,7 +69,7 @@ a subclass of `APIError` will be thrown:
 ```ts
 async function main() {
   const response = await client.recommend
-    .getRecommendations({ agent_id: 'cursor', query: 'Best CRM for remote teams' })
+    .getRecommendations({ query: 'Best CRM for remote teams' })
     .catch(async (err) => {
       if (err instanceof Admesh.APIError) {
         console.log(err.status); // 400
@@ -119,7 +113,7 @@ const client = new Admesh({
 });
 
 // Or, configure per-request:
-await client.recommend.getRecommendations({ agent_id: 'cursor', query: 'Best CRM for remote teams' }, {
+await client.recommend.getRecommendations({ query: 'Best CRM for remote teams' }, {
   maxRetries: 5,
 });
 ```
@@ -136,7 +130,7 @@ const client = new Admesh({
 });
 
 // Override per-request:
-await client.recommend.getRecommendations({ agent_id: 'cursor', query: 'Best CRM for remote teams' }, {
+await client.recommend.getRecommendations({ query: 'Best CRM for remote teams' }, {
   timeout: 5 * 1000,
 });
 ```
@@ -160,13 +154,13 @@ Unlike `.asResponse()` this method consumes the body, returning once it is parse
 const client = new Admesh();
 
 const response = await client.recommend
-  .getRecommendations({ agent_id: 'cursor', query: 'Best CRM for remote teams' })
+  .getRecommendations({ query: 'Best CRM for remote teams' })
   .asResponse();
 console.log(response.headers.get('X-My-Header'));
 console.log(response.statusText); // access the underlying Response object
 
 const { data: response, response: raw } = await client.recommend
-  .getRecommendations({ agent_id: 'cursor', query: 'Best CRM for remote teams' })
+  .getRecommendations({ query: 'Best CRM for remote teams' })
   .withResponse();
 console.log(raw.headers.get('X-My-Header'));
 console.log(response.recommendation_id);
