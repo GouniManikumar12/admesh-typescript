@@ -32,7 +32,6 @@ const client = new Admesh({
 
 async function main() {
   const response = await client.recommend.getRecommendations({
-    agent_id: 'cursor',
     query: 'Best CRM for remote teams',
   });
 
@@ -75,7 +74,6 @@ const client = new Admesh({
 
 async function main() {
   const params: Admesh.RecommendGetRecommendationsParams = {
-    agent_id: 'cursor',
     query: 'Best CRM for remote teams',
   };
   const response: Admesh.RecommendGetRecommendationsResponse = await client.recommend.getRecommendations(
@@ -98,7 +96,7 @@ a subclass of `APIError` will be thrown:
 ```ts
 async function main() {
   const response = await client.recommend
-    .getRecommendations({ agent_id: 'cursor', query: 'Best CRM for remote teams' })
+    .getRecommendations({ query: 'Best CRM for remote teams' })
     .catch(async (err) => {
       if (err instanceof Admesh.APIError) {
         console.log(err.status); // 400

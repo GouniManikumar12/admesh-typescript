@@ -11,7 +11,6 @@ describe('resource recommend', () => {
   // skipped: tests are disabled for the time being
   test.skip('getRecommendations: only required params', async () => {
     const responsePromise = client.recommend.getRecommendations({
-      agent_id: 'cursor',
       query: 'Best CRM for remote teams',
     });
     const rawResponse = await responsePromise.asResponse();
@@ -26,7 +25,6 @@ describe('resource recommend', () => {
   // skipped: tests are disabled for the time being
   test.skip('getRecommendations: required and optional params', async () => {
     const response = await client.recommend.getRecommendations({
-      agent_id: 'cursor',
       query: 'Best CRM for remote teams',
       followup_suggestions: 'followup_suggestions',
       intent_summary: 'User just had a meeting about OKRs and needs a task management tool.',
