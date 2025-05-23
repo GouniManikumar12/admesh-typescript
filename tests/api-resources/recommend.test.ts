@@ -26,13 +26,19 @@ describe('resource recommend', () => {
   test.skip('getRecommendations: required and optional params', async () => {
     const response = await client.recommend.getRecommendations({
       query: 'Best CRM for remote teams',
-      followup_suggestions: 'followup_suggestions',
-      intent_summary: 'User just had a meeting about OKRs and needs a task management tool.',
-      model: 'mistralai/mistral-7b-instruct',
+      format: 'auto',
       previous_query: 'previous_query',
+      previous_summary: 'summary of previous recommendation',
       session_id: 'session_id',
-      summary: 'summary',
-      user_id: 'user_id',
     });
+
+    // Example of accessing the response
+    if (response.response?.recommendations) {
+      for (const rec of response.response.recommendations) {
+        console.log(`Title: ${rec.title}`);
+        console.log(`Reason: ${rec.reason}`);
+        console.log(`Link: ${rec.admesh_link}`);
+      }
+    }
   });
 });

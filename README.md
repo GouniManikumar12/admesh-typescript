@@ -33,9 +33,17 @@ const client = new Admesh({
 async function main() {
   const response = await client.recommend.getRecommendations({
     query: 'Best CRM for remote teams',
+    format: 'auto',
   });
 
   console.log(response.recommendation_id);
+
+  // Access recommendations
+  response.response?.recommendations?.forEach(rec => {
+    console.log(`Title: ${rec.title}`);
+    console.log(`Reason: ${rec.reason}`);
+    console.log(`Link: ${rec.admesh_link}`);
+  });
 }
 
 main();
@@ -75,10 +83,18 @@ const client = new Admesh({
 async function main() {
   const params: Admesh.RecommendGetRecommendationsParams = {
     query: 'Best CRM for remote teams',
+    format: 'auto',
   };
   const response: Admesh.RecommendGetRecommendationsResponse = await client.recommend.getRecommendations(
     params,
   );
+
+  // Access recommendations with type safety
+  response.response?.recommendations?.forEach(rec => {
+    console.log(`Title: ${rec.title}`);
+    console.log(`Reason: ${rec.reason}`);
+    console.log(`Link: ${rec.admesh_link}`);
+  });
 }
 
 main();
@@ -96,7 +112,10 @@ a subclass of `APIError` will be thrown:
 ```ts
 async function main() {
   const response = await client.recommend
-    .getRecommendations({ query: 'Best CRM for remote teams' })
+    .getRecommendations({
+      query: 'Best CRM for remote teams',
+      format: 'auto'
+    })
     .catch(async (err) => {
       if (err instanceof Admesh.APIError) {
         console.log(err.status); // 400

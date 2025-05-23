@@ -6,4 +6,4 @@ Types:
 
 Methods:
 
-- <code title="post /recommend">client.recommend.<a href="./src/resources/recommend.ts">getRecommendations</a>({ ...params }) -> RecommendGetRecommendationsResponse</code>
+- <code title="post /agent/recommend">client.recommend.<a href="./src/resources/recommend.ts">getRecommendations</a>({ ...params }) -> RecommendGetRecommendationsResponse</code>
