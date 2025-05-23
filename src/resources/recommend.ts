@@ -19,55 +19,61 @@ export class Recommend extends APIResource {
     body: RecommendGetRecommendationsParams,
     options?: RequestOptions,
   ): APIPromise<RecommendGetRecommendationsResponse> {
-    return this._client.post('/recommend', { body, ...options });
+    return this._client.post('/agent/recommend', { body, ...options });
   }
 }
 
 export interface RecommendGetRecommendationsResponse {
-  decision_factors?: RecommendGetRecommendationsResponse.DecisionFactors;
-
-  end_of_session?: boolean;
-
   intent?: RecommendGetRecommendationsResponse.Intent;
+
+  response?: RecommendGetRecommendationsResponse.Response;
+
+  tokens_used?: number;
 
   model_used?: string;
 
   recommendation_id?: string;
 
-  response?: RecommendGetRecommendationsResponse.Response;
-
   session_id?: string;
 
-  tokens_used?: number;
+  end_of_session?: boolean;
 }
 
 export namespace RecommendGetRecommendationsResponse {
-  export interface DecisionFactors {
-    highlighted?: Array<string>;
-
-    reasoning?: string;
-  }
-
   export interface Intent {
-    category?: string;
+    categories?: Array<string>;
 
-    goal?: Array<string>;
+    goal?: string;
 
-    intent_match_score?: number;
+    llm_intent_confidence_score?: number;
 
     known_mentions?: Array<string>;
 
-    type?: string;
+    intent_type?: string;
+
+    intent_group?: string;
+
+    tags?: Array<string>;
+  }
+
+  export interface FollowupSuggestion {
+    label?: string;
+
+    query?: string;
+
+    product_mentions?: Array<string>;
+
+    admesh_links?: Record<string, string>;
+
+    session_id?: string;
   }
 
   export interface Response {
-    final_verdict?: string;
-
-    followup_suggestions?: Array<string>;
+    summary?: string;
 
     recommendations?: Array<Response.Recommendation>;
 
-    summary?: string;
+    followup_suggestions?: Array<FollowupSuggestion>;
   }
 
   export namespace Response {
@@ -76,13 +82,13 @@ export namespace RecommendGetRecommendationsResponse {
 
       admesh_link: string;
 
-      admesh_trust_score: number;
-
       product_id: string;
 
       reason: string;
 
       title: string;
+
+      intent_match_score?: number;
 
       features?: Array<string>;
 
@@ -91,8 +97,6 @@ export namespace RecommendGetRecommendationsResponse {
       integrations?: Array<string>;
 
       pricing?: string;
-
-      product_match_score?: number;
 
       redirect_url?: string;
 
@@ -116,19 +120,13 @@ export namespace RecommendGetRecommendationsResponse {
 export interface RecommendGetRecommendationsParams {
   query: string;
 
-  followup_suggestions?: string | null;
-
-  intent_summary?: string | null;
-
-  model?: string | null;
+  format?: string | null;
 
   previous_query?: string | null;
 
+  previous_summary?: string | null;
+
   session_id?: string | null;
-
-  summary?: string | null;
-
-  user_id?: string | null;
 }
 
 export declare namespace Recommend {
