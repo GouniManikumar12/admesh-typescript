@@ -1,0 +1,126 @@
+name: Auto Version and Publish
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - 'package.json'
+  workflow_dispatch:
+
+jobs:
+  version-and-publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Run tests
+        run: ./scripts/test
+
+      - name: Get current version
+        id: current_version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "Current version: $VERSION"
+          echo "current_version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Increment version
+        id: increment_version
+        run: |
+          CURRENT_VERSION=${{ steps.current_version.outputs.current_version }}
+
+          # Handle pre-release versions
+          if [[ "$CURRENT_VERSION" == *"-"* ]]; then
+            # For pre-release versions, extract the base version and pre-release part
+            BASE_VERSION=$(echo $CURRENT_VERSION | cut -d'-' -f1)
+            PRE_RELEASE=$(echo $CURRENT_VERSION | cut -d'-' -f2-)
+
+            # Split base version into parts
+            IFS='.' read -r -a VERSION_PARTS <<< "$BASE_VERSION"
+            MAJOR=${VERSION_PARTS[0]}
+            MINOR=${VERSION_PARTS[1]}
+            PATCH=${VERSION_PARTS[2]}
+
+            # Increment patch version
+            NEW_PATCH=$((PATCH + 1))
+            NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH-$PRE_RELEASE"
+          else
+            # For regular versions, split into parts
+            IFS='.' read -r -a VERSION_PARTS <<< "$CURRENT_VERSION"
+            MAJOR=${VERSION_PARTS[0]}
+            MINOR=${VERSION_PARTS[1]}
+            PATCH=${VERSION_PARTS[2]}
+
+            # Increment patch version
+            NEW_PATCH=$((PATCH + 1))
+            NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH"
+          fi
+
+          echo "New version: $NEW_VERSION"
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+          # Update version in package.json
+          npm version $NEW_VERSION --no-git-tag-version
+
+      - name: Update version in src/version.ts
+        run: |
+          NEW_VERSION=${{ steps.increment_version.outputs.new_version }}
+          echo "export const VERSION = '$NEW_VERSION';" > src/version.ts
+
+      - name: Update .release-please-manifest.json
+        run: |
+          NEW_VERSION=${{ steps.increment_version.outputs.new_version }}
+          echo '{
+            ".": "'$NEW_VERSION'"
+          }' > .release-please-manifest.json
+
+      - name: Commit version changes
+        run: |
+          git config --local user.email "admesh-bot@useadmesh.com"
+          git config --local user.name "AdMesh Bot"
+          git add package.json src/version.ts .release-please-manifest.json
+          git commit -m "chore: bump version to ${{ steps.increment_version.outputs.new_version }} [skip ci]"
+          git push
+
+      - name: Build package
+        run: yarn build
+
+      - name: Publish to NPM
+        run: |
+          cd dist
+          npm config set //registry.npmjs.org/:_authToken=${{ secrets.ADMESH_NPM_TOKEN || secrets.NPM_TOKEN }}
+
+          # Extract the pre-release tag if it exists
+          VERSION="${{ steps.increment_version.outputs.new_version }}"
+          if [[ "$VERSION" =~ -([a-zA-Z]+) ]]; then
+            # Extract the part before any dot in the pre-release identifier
+            TAG="${BASH_REMATCH[1]}"
+          else
+            TAG="latest"
+          fi
+
+          # Publish with the appropriate tag
+          npm publish --access public --tag "$TAG"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.increment_version.outputs.new_version }}
+          name: Release v${{ steps.increment_version.outputs.new_version }}
+          generate_release_notes: true

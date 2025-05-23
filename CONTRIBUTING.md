@@ -94,12 +94,15 @@ $ yarn fix
 
 ## Publishing and releases
 
-Changes made to this repository via the automated release PR pipeline should publish to npm automatically. If
-the changes aren't made through the automated pipeline, you may want to make releases manually.
+The repository uses an automated workflow that runs when changes are pushed to the main branch. This workflow:
 
-### Publish with a GitHub workflow
+1. Automatically increments the version number (patch version)
+2. Updates the version in all necessary files
+3. Commits the changes back to the repository
+4. Builds and publishes the package to NPM
+5. Creates a GitHub release with the new version
 
-You can release to package managers by using [the `Publish NPM` GitHub action](https://www.github.com/GouniManikumar12/admesh-typescript/actions/workflows/publish-npm.yml). This requires a setup organization or repository secret to be set up.
+No manual intervention is required for normal releases.
 
 ### Publish manually
 
