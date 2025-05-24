@@ -3,15 +3,22 @@
 import { APIResource } from '../core/resource';
 import { APIPromise } from '../core/api-promise';
 import { RequestOptions } from '../internal/request-options';
+import { NoRecommendationsError } from '../core/error';
 
 export class Recommend extends APIResource {
   /**
    * Get monetized product/tool recommendations
    *
+   * @param body - The request parameters
+   * @param options - Additional request options
+   * @returns A promise that resolves to the recommendation response
+   * @throws NoRecommendationsError if no recommendations are available and raiseOnEmptyRecommendations is true
+   *
    * @example
    * ```ts
    * const response = await client.recommend.getRecommendations({
    *   query: 'Best CRM for remote teams',
+   *   format: 'auto',
    * });
    * ```
    */
@@ -19,7 +26,21 @@ export class Recommend extends APIResource {
     body: RecommendGetRecommendationsParams,
     options?: RequestOptions,
   ): APIPromise<RecommendGetRecommendationsResponse> {
-    return this._client.post('/agent/recommend', { body, ...options });
+    const { raiseOnEmptyRecommendations = true, ...restBody } = body;
+
+    return this._client.post('/agent/recommend', { body: restBody, ...options }).then((response) => {
+      // Check if recommendations are empty or null
+      if (
+        raiseOnEmptyRecommendations &&
+        (!response.response ||
+          !response.response.recommendations ||
+          response.response.recommendations.length === 0)
+      ) {
+        throw new NoRecommendationsError({ message: `No recommendations available for query: ${body.query}` });
+      }
+
+      return response;
+    });
   }
 }
 
@@ -127,6 +148,12 @@ export interface RecommendGetRecommendationsParams {
   previous_summary?: string | null;
 
   session_id?: string | null;
+
+  /**
+   * Whether to raise a NoRecommendationsError when no recommendations are available.
+   * @default true
+   */
+  raiseOnEmptyRecommendations?: boolean;
 }
 
 export declare namespace Recommend {

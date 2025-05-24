@@ -19,4 +19,5 @@ export {
   InternalServerError,
   PermissionDeniedError,
   UnprocessableEntityError,
+  NoRecommendationsError,
 } from './core/error';

@@ -128,3 +128,10 @@ export class UnprocessableEntityError extends APIError<422, Headers> {}
 export class RateLimitError extends APIError<429, Headers> {}
 
 export class InternalServerError extends APIError<number, Headers> {}
+
+export class NoRecommendationsError extends AdmeshError {
+  constructor({ message = 'No recommendations available for the given query.' }: { message?: string } = {}) {
+    super(message);
+    this.name = 'NoRecommendationsError';
+  }
+}

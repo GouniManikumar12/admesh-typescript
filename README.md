@@ -114,10 +114,17 @@ async function main() {
   const response = await client.recommend
     .getRecommendations({
       query: 'Best CRM for remote teams',
-      format: 'auto'
+      format: 'auto',
+      // Set to false if you want to handle empty recommendations yourself
+      raiseOnEmptyRecommendations: true,
     })
     .catch(async (err) => {
-      if (err instanceof Admesh.APIError) {
+      if (err instanceof Admesh.NoRecommendationsError) {
+        console.log(err.name); // NoRecommendationsError
+        console.log(err.message); // No recommendations available for query: Best CRM for remote teams
+        // Handle the case where no recommendations are available
+        // For example, you might want to suggest alternative queries
+      } else if (err instanceof Admesh.APIError) {
         console.log(err.status); // 400
         console.log(err.name); // BadRequestError
         console.log(err.headers); // {server: 'nginx', ...}
@@ -142,6 +149,7 @@ Error codes are as follows:
 | 429         | `RateLimitError`           |
 | >=500       | `InternalServerError`      |
 | N/A         | `APIConnectionError`       |
+| N/A         | `NoRecommendationsError`   |
 
 ## Requirements
 
