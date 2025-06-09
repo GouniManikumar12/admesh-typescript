@@ -4,7 +4,10 @@
 
 This library provides convenient access to the Admesh REST API from server-side TypeScript or JavaScript.
 
-The full API of this library can be found in [api.md](api.md).
+## Documentation
+
+- **Complete Documentation**: [https://docs.useadmesh.com/](https://docs.useadmesh.com/) - Full SDK documentation and guides
+- **API Reference**: The full API of this library can be found in [api.md](api.md)
 
 ## Installation
 

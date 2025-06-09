@@ -143,10 +143,28 @@ export class Admesh {
       );
     }
 
+    // Determine the appropriate base URL based on environment
+    let defaultBaseURL = 'https://api.useadmesh.com'; // Production default
+
+    // Check for environment-specific URLs
+    const environment = readEnv('ADMESH_ENVIRONMENT') || readEnv('NODE_ENV') || 'production';
+
+    switch (environment.toLowerCase()) {
+      case 'development':
+      case 'dev':
+        defaultBaseURL = readEnv('ADMESH_DEV_BASE_URL') || 'http://localhost:8000';
+        break;
+      case 'production':
+      case 'prod':
+      default:
+        defaultBaseURL = readEnv('ADMESH_PROD_BASE_URL') || 'https://api.useadmesh.com';
+        break;
+    }
+
     const options: ClientOptions = {
       apiKey,
       ...opts,
-      baseURL: baseURL || `https://api.useadmesh.com`,
+      baseURL: baseURL || defaultBaseURL,
     };
 
     this.baseURL = options.baseURL!;
