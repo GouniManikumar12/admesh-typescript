@@ -19,7 +19,7 @@ npm install admesh
 
 To use the AdMesh API, you'll need an API key:
 
-1. Create an account at [https://useadmesh.com/agent](https://useadmesh.com/agent) if you don't have one
+1. Create an account at [https://useadmesh.com/agents](https://useadmesh.com/agents) if you don't have one
 2. Once registered, you can obtain your API key from the dashboard
 3. Use this API key in your application as shown in the examples below
 
