@@ -21,3 +21,4 @@ export {
   UnprocessableEntityError,
   NoRecommendationsError,
 } from './core/error';
+export { sanitizeAndBuild, sanitizeUserInput, type SanitizeAndBuildResult } from './sanitize-and-build';

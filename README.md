@@ -52,6 +52,132 @@ async function main() {
 main();
 ```
 
+## PII Sanitization and Prompt Building
+
+The AdMesh TypeScript SDK includes built-in PII (Personally Identifiable Information) sanitization functionality to help you create clean, privacy-preserving prompts for the recommendation API.
+
+### Basic Usage
+
+```typescript
+import { sanitizeAndBuild } from 'admesh';
+
+// Sanitize user input and build a structured prompt
+const userInput = "Hi, I'm Priya (priya@gmail.com). I'm a 27-year-old female building a wellness app.";
+const result = sanitizeAndBuild(userInput);
+
+console.log(result);
+// Output:
+// {
+//   "prompt": "Suggest tools for a 27-year-old female building a wellness app.",
+//   "removed": {
+//     "name": "Priya",
+//     "email": "priya@gmail.com",
+//     "phone": null
+//   },
+//   "extracted_context": {
+//     "age": 27,
+//     "gender": "female",
+//     "goal": "building a wellness app"
+//   }
+// }
+```
+
+### Integration with Recommendations
+
+```typescript
+import Admesh, { sanitizeAndBuild } from 'admesh';
+
+const client = new Admesh({
+  apiKey: process.env.ADMESH_API_KEY,
+});
+
+async function getRecommendationsWithSanitization() {
+  // User provides input with PII
+  const userInput = "I'm John (john@example.com), 30 years old, building a fintech startup";
+
+  // Sanitize and build clean prompt
+  const sanitized = sanitizeAndBuild(userInput);
+
+  // Use the clean prompt for recommendations
+  const response = await client.recommend.getRecommendations({
+    query: sanitized.prompt,
+    format: 'auto',
+  });
+
+  console.log(`Clean prompt used: ${sanitized.prompt}`);
+  console.log(`PII removed:`, sanitized.removed);
+
+  // Access recommendations as usual
+  response.response?.recommendations?.forEach(rec => {
+    console.log(`Title: ${rec.title}`);
+  });
+}
+```
+
+### Privacy Assurance
+
+- **Local Processing**: All PII sanitization happens locally in your application
+- **No External Calls**: No data is sent to external services during sanitization
+- **Complete Removal**: PII is completely removed from the final prompt
+- **No Storage**: Original input is not stored or logged anywhere
+
+### Performance Characteristics
+
+- **Fast Processing**: Typical processing time < 100ms for standard inputs
+- **Minimal Memory**: Uses pre-compiled regex patterns for efficiency
+- **No Network**: Zero network requests during sanitization process
+- **Browser Compatible**: Works in both Node.js and browser environments
+
+### Supported PII Detection
+
+The sanitization function automatically detects and removes:
+
+- **Names**: "I'm John", "My name is Sarah", "This is Alice"
+- **Email Addresses**: Standard email formats including complex domains
+- **Phone Numbers**: US and international formats, various separators
+
+### Context Extraction
+
+The function also extracts useful context while removing PII:
+
+- **Age**: "I'm 25", "30 years old", "age 35"
+- **Gender**: "male", "female", "man", "woman", "guy", "girl"
+- **Goals**: "building an app", "creating a website", "working on a project"
+
+### Advanced Usage
+
+```typescript
+import { PIISanitizer, PromptBuilder } from 'admesh';
+
+// Use components separately for custom workflows
+const sanitizer = new PIISanitizer();
+const builder = new PromptBuilder();
+
+// Analyze text
+const analysis = sanitizer.analyzeText("I'm Sarah, building a mobile app");
+
+// Build custom prompt
+const prompt = builder.buildCompletePrompt(
+  analysis.sanitizedText,
+  analysis.extractedContext
+);
+```
+
+### TypeScript Support
+
+The SDK provides full TypeScript support with detailed type definitions:
+
+```typescript
+import { sanitizeAndBuild, SanitizeAndBuildResult } from 'admesh';
+
+const result: SanitizeAndBuildResult = sanitizeAndBuild("user input");
+
+// Full type safety
+const prompt: string = result.prompt;
+const removedName: string | null = result.removed.name;
+const age: number | null = result.extracted_context.age;
+```
+
 There are several ways to provide your API key:
 
 1. **Direct parameter**: Pass it directly as shown above with the `apiKey` parameter
